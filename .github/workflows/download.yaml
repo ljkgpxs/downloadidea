@@ -30,13 +30,20 @@ jobs:
     - name: Download File
       run: |
         curl -L -o ideaIU-2024.3.4.zip "https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIU/2024.3.4/ideaIU-2024.3.4.zip"  # 下载外部文件 [[18]]
-        
-    - name: Upload Asset
-      uses: actions/upload-release-asset@v1
+    
+    - name: 生成发布标签
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        echo -e "xxxxxxx\n" >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d_X86")" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload to releases
+      uses: softprops/action-gh-release@v2.0.4
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}  # 获取上传地址 [[2, 9]]
-        asset_path: ./ideaIU-2024.3.4.zip  # 本地文件路径
-        asset_name: ideaIU-2024.3.4.zip  # 上传后的文件名
-        asset_content_type: application/zip  # 文件类型 [[8]]
+        tag_name: xxxxx.zip
+        body_path: release.txt
+        files: ideaIU-2024.3.4.zip
