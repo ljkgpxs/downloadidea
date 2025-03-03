@@ -1,9 +1,8 @@
 name: Download and Upload to Release
 
 on:
-  push:
-    tags:
-      - 'v*'  # 当推送v开头的tag时触发 [[3, 9]]
+  repository_dispatch:
+  workflow_dispatch:
 
 jobs:
   create-release:
