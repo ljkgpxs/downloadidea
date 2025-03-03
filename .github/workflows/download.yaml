@@ -18,8 +18,10 @@ jobs:
         ls -lh ideaIU-2024.3.4.zip
 
     - name: Upload to Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: ideaIU-2024.3.4.zip  # 产物显示名称
-        path: ideaIU-2024.3.4.zip     # 要上传的本地文件路径
-        retention-days: 7         # 保留天数（默认90天）
+        name: ideaIU-2024.3.4.zip
+        path: ideaIU-2024.3.4.zip
+        retention-days: 7
+        compression-level: 0  # 新增压缩级别控制 (0-9)
+        if-no-files-found: error  # 新增空文件处理策略
