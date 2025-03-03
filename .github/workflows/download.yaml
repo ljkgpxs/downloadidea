@@ -6,25 +6,7 @@ on:
 
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}  # 输出上传地址 [[3, 9]]
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1  # 使用社区维护的创建Release方案 [[11]]
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        name: Release ${{ github.ref_name }}
-
   upload-asset:
-    needs: create-release  # 依赖创建Release的job [[9]]
     runs-on: ubuntu-latest
     steps:
     - name: Download File
