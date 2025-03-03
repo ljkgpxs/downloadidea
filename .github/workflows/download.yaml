@@ -5,37 +5,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}  # 输出上传地址 [[3, 9]]
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1  # 使用社区维护的创建Release方案 [[11]]
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        name: Release ${{ github.ref_name }}
-
-  upload-asset:
-    needs: create-release  # 依赖创建Release的job [[9]]
+  download-and-upload:
     runs-on: ubuntu-latest
     steps:
     - name: Download File
       run: |
-        curl -L -o ideaIU-2024.3.4.zip "https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIU/2024.3.4/ideaIU-2024.3.4.zip"  # 下载外部文件 [[18]]
+        # 使用curl下载文件（支持重定向）
+        curl -L -o ideaIU-2024.3.4.zip "https://cache-redirector.jetbrains.com/www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIU/2024.3.4/ideaIU-2024.3.4.zip"
         
-    - name: Upload Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # 可选：验证文件完整性
+        echo "Checking file size..."
+        ls -lh ideaIU-2024.3.4.zip
+
+    - name: Upload to Artifacts
+      uses: actions/upload-artifact@v3
       with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}  # 获取上传地址 [[2, 9]]
-        asset_path: ./ideaIU-2024.3.4.zip  # 本地文件路径
-        asset_name: ideaIU-2024.3.4.zip  # 上传后的文件名
-        asset_content_type: application/zip  # 文件类型 [[8]]
+        name: ideaIU-2024.3.4.zip  # 产物显示名称
+        path: ideaIU-2024.3.4.zip     # 要上传的本地文件路径
+        retention-days: 7         # 保留天数（默认90天）
